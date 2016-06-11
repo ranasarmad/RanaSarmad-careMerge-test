@@ -1,0 +1,108 @@
+
+
+var cheerio = require("cheerio");
+var express = require('express');
+var app = express();
+var request = require("request");
+async = require("async");
+
+
+app.get('/', function (request, response) {
+    response.send('WELCOME TO INDEX\n');
+});
+
+
+
+app.get('/I/want/title/*', function (request_cal, response) {
+
+
+    var address = request_cal.param('address');
+    var arrayLength = address.length;
+
+    response.write("<html>");
+    response.write("<head>");
+    response.write("</head>");
+    response.write("<body>");
+    response.write(" <h1> Following are the titles of given websites: </h1>");
+    response.write("<ul>");
+
+
+async.each(address,
+  // 2nd param is the function that each item is passed to
+  function(item, callback){
+    // Call an asynchronous function, often a save() to DB
+
+     response.write("<li>");
+     response.write(item);
+
+    response.write("</li>");
+
+          request({
+                uri: "http://www.google.com",
+                method: "GET",
+                timeout: 10000,
+                followRedirect: true,
+               maxRedirects: 10
+             }, function(error, response2, body) {
+
+                    var $ = cheerio.load(body);
+
+                      var l = $("title").text();
+                      console.log(l);
+             });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  },
+  // 3rd param is the function to call when everything's done
+  function(err){
+    // All tasks are done now
+      response.write("</ul>");
+        response.write("</body>");
+        response.write("</html>");
+        response.end();
+  }
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+});
+
+
+
+
+
+var server = app.listen(8081, function () {
+
+  var host = server.address().address
+  var port = server.address().port
+
+  console.log("Example app listening at http://%s:%s", host, port)
+
+})
