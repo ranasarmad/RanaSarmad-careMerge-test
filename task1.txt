@@ -1,0 +1,76 @@
+
+
+var cheerio = require("cheerio");
+var express = require('express');
+var app = express();
+var request = require("request");
+
+
+
+app.get('/', function (request, response) {
+    response.send('WELCOME TO INDEX\n');
+});
+
+
+
+app.get('/I/want/title/*', function (request_cal, response) {
+
+
+    var address = request_cal.param('address');
+    var arrayLength = address.length;
+
+    response.write("<html>");
+    response.write("<head>");
+    response.write("</head>");
+    response.write("<body>");
+    response.write(" <h1> Following are the titles of given websites: </h1>");
+    response.write("<ul>");
+
+
+for (var i = 0; i < arrayLength; i++) {
+
+
+     console.log(address[i]);
+      response.write("<li>");
+      response.write(address[i]);
+
+
+       request({
+          uri: "http://www.google.com",
+          method: "GET",
+          timeout: 10000,
+          followRedirect: true,
+         maxRedirects: 10
+       }, function(error, response2, body) {
+
+              var $ = cheerio.load(body);
+
+                var l = $("title").text();
+                console.log(l);
+       });
+
+
+
+
+      response.write("</li>");
+}
+
+    response.write("</ul>");
+    response.write("</body>");
+    response.write("</html>");
+    response.end();
+
+});
+
+
+
+
+
+var server = app.listen(8081, function () {
+
+  var host = server.address().address
+  var port = server.address().port
+
+  console.log("Example app listening at http://%s:%s", host, port)
+
+})
